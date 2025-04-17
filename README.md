@@ -1,62 +1,61 @@
+
 # FSLogix Update Script
 PowerShell-Skript, welches FSLogix automatisch auf die neueste Version aktualisiert. Gedacht zur Verwendung mit einem RMM-Tool.
 
 ## Features
 
-1.  **Automatisierte FSLogix-Aktualisierung:**
+ 1.  **Automatisierte FSLogix-Aktualisierung:**
     * **Nutzen:** Spart dem Anwender manuelle Arbeit und Zeit, da die Aktualisierung selbstständig im Hintergrund abläuft. Dies reduziert den administrativen Aufwand erheblich und stellt sicher, dass FSLogix-Installationen auf dem neuesten Stand bleiben.
 
-2.  **Geplante Ausführung:**
+ 2.  **Geplante Ausführung:**
     * **Nutzen:** Ermöglicht die Steuerung, wann die Aktualisierung stattfindet (basierend auf Wochentag und Uhrzeit). Der Anwender kann so Zeitpunkte wählen, die wenig störend für die Benutzer sind (z.B. außerhalb der Geschäftszeiten).
 
-3.  **Zeitliche Toleranz für die Ausführung:**
+ 3.  **Zeitliche Toleranz für die Ausführung:**
     * **Nutzen:** Bietet Flexibilität bei der Ausführungszeit. Wenn das RMM-Tool das Skript nicht exakt zur geplanten Zeit startet, wird die Aktualisierung dennoch innerhalb des konfigurierten Zeitfensters durchgeführt. Dies erhöht die Zuverlässigkeit der automatisierten Aktualisierung.
     * **Hintergedanke:** Damit das Skript zur von Ihnen gewünschten Uhrzeit ausgeführt wird, stellen Sie ein, dass das Skript mehrfach am Tag ausgeführt wird. Je öfter das Skript ausgeführt wird, umso kleiner stellen Sie auch die Toleranz ein.
     * **Beispiel #1:** Das Skript wird jede Stunde ausgeführt. Es soll um 04:00 Uhr morgens ausgeführt werden. Das RMM-Tool startet den stündlichen Rythmus um 00:13 Uhr. Somit wird das Skript um 03:10 und um 04:10, aber nie exakt um 04:00 Uhr ausgeführt. Dafür ist die Toleranz da. Stellen Sie diese etwa auf 30 Minuten ein, würde das Skript in diesem Fall um 04:13 Uhr ausgeführt.
     * **Beispiel #2:** Wird das Skript jede Minute ausgeführt, können Sie die Toleranz auf 1 Minute ein, dann wird das Skript genau zu der Minute ausgeführt, die sie vorbestimmt haben.
 
-4.  **Optionale Neustartunterdrückung:**
+ 4.  **Optionale Neustartunterdrückung:**
     * **Nutzen:** Der Anwender hat die Kontrolle darüber, ob ein Neustart nach der Aktualisierung automatisch erfolgen soll oder nicht. Dies ist nützlich, um unerwünschte Neustarts während der Arbeitszeit zu vermeiden und diese zentral oder zu einem späteren Zeitpunkt zu planen oder separat zu automatisieren. 
 
-5. **Validierung der Eingabeparameter:**
+ 5. **Validierung der Eingabeparameter:**
     * **Nutzen:** Das Skript überprüft, ob die konfigurierten Variablen (z.B. Downloadpfad, Installationszeit) im korrekten Format vorliegen. Der Anwender wird frühzeitig und sehr konkret auf Konfigurationsfehler hingewiesen, was Fehlfunktionen des Skripts verhindert und Klarheit darüber schafft, exakt war geändert werden muss, damit das Skript starten kann.
     * **Beispiel:** Die detaillierte Fehlermeldung bei falschem Zeitformat ("Ungültiges Zeitformat. Verwende HH:mm.") erleichtert die Korrektur der Konfiguration erheblich.
 
-a)  **Validierung des Downloadpfads auf gültiges Format:**
+ 6. **Validierung der Eingabeparameter auf gültiges Format:**
+
     * **Implementierung:** Das Skript prüft, ob der `$DownloadPath` entweder einem gültigen Laufwerksbuchstaben mit folgendem Doppelpunkt und Backslash (z.B. `C:\`) oder einem UNC-Pfad (beginnend mit `\\`) entspricht. Außerdem wird geprüft, ob ungültige Zeichen für Windows-Pfade (<>:"/\|\?\*) enthalten sind.
     * **Beispielhafte Fehlermeldung:**
         * "`$DownloadPath 'ungültiger_pfad' is not a valid Windows path format (e.g., C:\\ or \\\\server\\share)."`
         * "`$DownloadPath 'C:\Datei>' contains invalid characters for a Windows path (<>:\/|\?\*)."`
     * **Nutzen für den Anwender:** Verhindert, dass das Skript in ungültige oder nicht existierende Pfade herunterlädt oder versucht, dort Dateien zu erstellen. Dies vermeidet Fehler im späteren Verlauf des Skripts (z.B. beim Speichern oder Extrahieren der heruntergeladenen Datei) und spart dem Anwender Zeit bei der Fehlersuche, da das Problem direkt bei der Konfiguration erkannt wird.
+	 * **Liste der validierten Eingabeparameter :**
+		 1. **Validierung der `$DownloadUrl` auf gültiges URL-Schema:**
+			* **Implementierung:** Das Skript überprüft, ob die `$DownloadUrl` mit einem der erwarteten Protokolle (`http`, `https`, `ftp`) beginnt.
+			* **Beispielhafte Fehlermeldung:** "`$DownloadUrl is not a valid URL scheme (must be http, https, or ftp)."`
+			* **Nutzen für den Anwender:** Stellt sicher, dass das Skript versucht, die Datei von einer gültigen Quelle herunterzuladen. Eine URL mit einem unbekannten oder falschen Schema würde zu einem Downloadfehler führen. Die frühzeitige Validierung hilft, solche Fehler zu vermeiden.
+		2. **Validierung des `$InstallDay` auf gültige deutsche Wochentage:**
+			* **Implementierung:** Das Skript prüft, ob der Wert von `$InstallDay` exakt mit einem der sieben deutschen Wochentage ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag") übereinstimmt (Case-sensitive).
+			* **Beispielhafte Fehlermeldung:** "`$InstallDay 'Sonntag!' is not a valid German weekday (Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag, Sonntag)."`
+			**Nutzen für den Anwender:** Verhindert Tippfehler oder die Verwendung englischer Wochentagsnamen, die dazu führen würden, dass die geplante Ausführung nicht wie erwartet stattfindet. Der Anwender kann sich darauf verlassen, dass die Aktualisierung am gewünschten Tag durchgeführt wird.
+		3. **Validierung der `$InstallTime` auf korrektes 24-Stunden-Format:**
+			* **Implementierung:** Das Skript verwendet ein reguläres Expressions (`-match '^([01]\d|2[0-3]):([0-5]\d)$'`), um sicherzustellen, dass `$InstallTime` dem Format "HH:mm" entspricht, wobei HH zwischen 00 und 23 und mm zwischen 00 und 59 liegen muss.
+			**Beispielhafte Fehlermeldung:** "`$InstallTime '25:00' is not in the valid HH:mm format (00:00 - 23:59)."`
+			**Nutzen für den Anwender:** Stellt sicher, dass die geplante Ausführungszeit im korrekten Format angegeben ist und vom Skript fehlerfrei interpretiert werden kann. Falsche Zeitformate würden die geplante Ausführung unvorhersehbar machen.
+		4. **Validierung von `$MinutesTolerance` auf gültigen numerischen Bereich:**
+			* **Implementierung:** Das Skript prüft, ob `$MinutesTolerance` eine gültige ganze Zahl ist und ob dieser Wert innerhalb eines sinnvollen Bereichs liegt (hier 0 bis 720 Minuten, also 12 Stunden).
+			* **Beispielhafte Fehlermeldung:**
+		        * "`$MinutesTolerance 'abc' is not a valid integer."`
+		        * "`$MinutesTolerance '-5' is not within the valid range (0-720)."`
+			* **Nutzen für den Anwender:** Verhindert die Verwendung ungültiger oder unsinniger Toleranzwerte, die zu unerwartetem Verhalten des Skripts bei der Überprüfung der Ausführungszeit führen könnten. Ein negativer Wert oder ein extrem hoher Wert wäre nicht sinnvoll.
 
-b)  **Validierung der `$DownloadUrl` auf gültiges URL-Schema:**
-    * **Implementierung:** Das Skript überprüft, ob die `$DownloadUrl` mit einem der erwarteten Protokolle (`http`, `https`, `ftp`) beginnt.
-    * **Beispielhafte Fehlermeldung:** "`$DownloadUrl is not a valid URL scheme (must be http, https, or ftp)."`
-    * **Nutzen für den Anwender:** Stellt sicher, dass das Skript versucht, die Datei von einer gültigen Quelle herunterzuladen. Eine URL mit einem unbekannten oder falschen Schema würde zu einem Downloadfehler führen. Die frühzeitige Validierung hilft, solche Fehler zu vermeiden.
-
-c)  **Validierung des `$InstallDay` auf gültige deutsche Wochentage:**
-    * **Implementierung:** Das Skript prüft, ob der Wert von `$InstallDay` exakt mit einem der sieben deutschen Wochentage ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag") übereinstimmt (Case-sensitive).
-    * **Beispielhafte Fehlermeldung:** "`$InstallDay 'Sonntag!' is not a valid German weekday (Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag, Sonntag)."`
-    * **Nutzen für den Anwender:** Verhindert Tippfehler oder die Verwendung englischer Wochentagsnamen, die dazu führen würden, dass die geplante Ausführung nicht wie erwartet stattfindet. Der Anwender kann sich darauf verlassen, dass die Aktualisierung am gewünschten Tag durchgeführt wird.
-
-d)  **Validierung der `$InstallTime` auf korrektes 24-Stunden-Format:**
-    * **Implementierung:** Das Skript verwendet ein reguläres Expressions (`-match '^([01]\d|2[0-3]):([0-5]\d)$'`), um sicherzustellen, dass `$InstallTime` dem Format "HH:mm" entspricht, wobei HH zwischen 00 und 23 und mm zwischen 00 und 59 liegen muss.
-    * **Beispielhafte Fehlermeldung:** "`$InstallTime '25:00' is not in the valid HH:mm format (00:00 - 23:59)."`
-    * **Nutzen für den Anwender:** Stellt sicher, dass die geplante Ausführungszeit im korrekten Format angegeben ist und vom Skript fehlerfrei interpretiert werden kann. Falsche Zeitformate würden die geplante Ausführung unvorhersehbar machen.
-
-e)  **Validierung von `$MinutesTolerance` auf gültigen numerischen Bereich:**
-    * **Implementierung:** Das Skript prüft, ob `$MinutesTolerance` eine gültige ganze Zahl ist und ob dieser Wert innerhalb eines sinnvollen Bereichs liegt (hier 0 bis 720 Minuten, also 12 Stunden).
-    * **Beispielhafte Fehlermeldung:**
-        * "`$MinutesTolerance 'abc' is not a valid integer."`
-        * "`$MinutesTolerance '-5' is not within the valid range (0-720)."`
-    * **Nutzen für den Anwender:** Verhindert die Verwendung ungültiger oder unsinniger Toleranzwerte, die zu unerwartetem Verhalten des Skripts bei der Überprüfung der Ausführungszeit führen könnten. Ein negativer Wert oder ein extrem hoher Wert wäre nicht sinnvoll.
-
-f)  **Validierung von `$Restart` auf gültige numerische Werte:**
-    * **Implementierung:** Das Skript prüft, ob `$Restart` eine gültige ganze Zahl ist und ob dieser Wert entweder 0 oder 1 ist (die erwarteten Steuerungsoptionen).
-    * **Beispielhafte Fehlermeldung:**
-        * "`$Restart 'ja' is not a valid integer."`
-        * "`$Restart '2' is not within the valid range (0-1)."`
-    * **Nutzen für den Anwender:** Stellt sicher, dass nur die zulässigen Werte für die Neustartsteuerung verwendet werden. Andere Werte würden vom Skript nicht korrekt interpretiert werden und könnten zu unerwarteten Neustartverhalten führen.
+		5. **Validierung von `$Restart` auf gültige numerische Werte:**
+			* **Implementierung:** Das Skript prüft, ob `$Restart` eine gültige ganze Zahl ist und ob dieser Wert entweder 0 oder 1 ist (die erwarteten Steuerungsoptionen).
+			* **Beispielhafte Fehlermeldung:**
+				* "`$Restart 'ja' is not a valid integer."`
+		        * "`$Restart '2' is not within the valid range (0-1)."`
+		    * **Nutzen für den Anwender:** Stellt sicher, dass nur die zulässigen Werte für die Neustartsteuerung verwendet werden. Andere Werte würden vom Skript nicht korrekt interpretiert werden und könnten zu unerwarteten Neustartverhalten führen.
 
 6.  **Integrierte Fehlerbehandlung:**
     * **Nutzen:** Fängt Fehler während des Download-, Extraktions- und Installationsprozesses ab und protokolliert diese. Der Anwender erhält dadurch klare Informationen, wenn etwas schiefgelaufen ist, anstatt dass der Prozess unbemerkt abbricht.
