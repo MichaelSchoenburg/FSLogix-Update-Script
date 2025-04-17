@@ -14,11 +14,13 @@ Ein PowerShell-Skript zur automatischen Aktualisierung von FSLogix auf die neues
 
 3.  **Flexible Ausführungszeit durch Toleranz:**
 
-    * **Nutzen:** Erhöht die Zuverlässigkeit der geplanten Ausführung, indem eine konfigurierbare Zeitspanne (`$MinutesTolerance`) um die geplante Uhrzeit toleriert wird. Dies kompensiert mögliche Ungenauigkeiten bei der Skriptausführung durch das RMM-Tool.
-    * **Hintergedanke:** Für eine präzisere Ausführung bei häufiger Skriptausführung (z.B. stündlich oder minütlich) kann die Toleranz entsprechend angepasst werden.
+    * **Nutzen:** Ermöglicht eine geplanten Ausführung auch, wenn das RMM-Tool das Skript nicht immer zu glatten Uhrzeiten startet, indem eine konfigurierbare Zeitspanne (`$MinutesTolerance`) um die geplante Uhrzeit toleriert wird. Dies kompensiert außerdem mögliche Ungenauigkeiten oder kleinere Verzögerungen bei der Skriptausführung durch das RMM-Tool.
+    * **Hintergedanke:** In manchen RMM-Tools werden die Skripte nicht immer zu glatten Uhrzeiten ausgeführt, sondern alle x Minuten (einstellbar) nachdem der PC hochgefahren wurde oder einem ähnlichen Ereignis. Wenn man sich nun auf eine Uhrzeit festlegt und das Skript jedoch vom RMM nie zu der exakten Uhrzeit gestartet wird, würde das Skript nie komplett durchlaufen, sondern immer abbrechen, weil es nicht die richtige Uhrzeit ist.
+    * **Tipp:** Wenn man nicht minütlich ausführt, wäre es logisch immer die Hälfte des Ausführungsintervalls als Toleranz zu konfigurieren.
     * **Beispiele:**
         * **Stündliche Ausführung, Ziel 04:00 Uhr:** Bei einer Toleranz von 30 Minuten würde das Skript zwischen 03:30 Uhr und 04:30 Uhr ausgeführt.
         * **Minütliche Ausführung, exakte Zielzeit:** Eine Toleranz von 1 Minute ermöglicht die Ausführung genau in der konfigurierten Minute.
+        * **Ausführung alle 15 Minuten, Ziel 04:15:** Bei einer Toleranz von 7 Minuten würde das Skript zwischen 04:08 Uhr und 04:22 Uhr ausgeführt.
 
 4.  **Optionale Neustartunterdrückung:**
 
