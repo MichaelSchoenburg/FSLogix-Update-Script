@@ -1,43 +1,29 @@
 <#
 .SYNOPSIS
-    T22-000215 - Rechnungsversand automatisieren
+    FSLogix-Update-Script
 
 .DESCRIPTION
-    Long description
-
-.SYNTAX
-
-
-.PARAMETERS
-
-
-.EXAMPLE
-    PS C:\> <example usage>
-    Explanation of what the example does
+    PowerShell script which automatically updates FSLogix to the latest version. Intended for use with a RMM tool.
 
 .INPUTS
-    Inputs (if any)
+    
 
 .OUTPUTS
-    Output (if any)
+    Exit Code 0 = Success
+    Exit Code 1 = Error
+    Exit Code 2 = Warning
 
-.RELATED LINKS
-    GitHub: https://github.com/MichaelSchoenburg/T22-000215
+.LINK
+    GitHub: https://github.com/MichaelSchoenburg/FSLogix-Update-Script
 
 .NOTES
     Author: Michael Schönburg
     Version: v1.0
-    Last Edit: 11.02.2021
+    Creation: 17.04.2025
     
     This projects code loosely follows the PowerShell Practice and Style guide, as well as Microsofts PowerShell scripting performance considerations.
     Style guide: https://poshcode.gitbook.io/powershell-practice-and-style/
     Performance Considerations: https://docs.microsoft.com/en-us/powershell/scripting/dev-cross-plat/performance/script-authoring-considerations?view=powershell-7.1
-
-.REMARKS
-    To see the examples, type: "get-help Get-HotFix -examples".
-    For more information, type: "get-help Get-HotFix -detailed".
-    For technical information, type: "get-help Get-HotFix -full".
-    For online help, type: "get-help Get-HotFix -online"
 #>
 
 #region INITIALIZATION
@@ -87,17 +73,8 @@ function Write-ConsoleLog {
         $Text
     )
 
-    # Save current VerbosePreference
-    $VerbosePreferenceBefore = $VerbosePreference
-
-    # Enable verbose output
-    $VerbosePreference = 'Continue'
-
     # Write verbose output
-    Write-Verbose "$( Get-Date -Format 'MM/dd/yyyy HH:mm:ss' ) - $( $Text )"
-
-    # Restore current VerbosePreference
-    $VerbosePreference = $VerbosePreferenceBefore
+    Write-Output "$( Get-Date -Format 'MM/dd/yyyy HH:mm:ss' ) - $( $Text )"
 }
 
 
