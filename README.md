@@ -62,7 +62,7 @@ Ein PowerShell-Skript zur automatischen Aktualisierung von FSLogix auf die neues
 
 Dieses Skript erwartet, dass das RMM-Tool die folgenden Variablen zur Laufzeit (Beispiel: Riversuite Riverbird) definiert:
 
-1.  `$Restart`: Steuert den Neustart nach der Installation (`0` = zulassen, `1` = unterdrücken).
+1.  `$Restart`: Steuert den Neustart nach der Installation (`0` = bei Bedarf automatisch neu starten, `1` = nie neu starten).
 
 2.  `$MinutesTolerance`: Toleranz in Minuten für die geplante Ausführungszeit.
 
