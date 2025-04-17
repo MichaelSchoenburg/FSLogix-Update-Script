@@ -16,5 +16,7 @@ $Restart            = 0                                 # 0 = do a restart, 1 = 
 
 ## OUTPUTS
 Exit Code 0 = Success
+
 Exit Code 1 = Error
+
 Exit Code 2 = Warning
