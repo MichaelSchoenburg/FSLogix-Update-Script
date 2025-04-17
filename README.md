@@ -22,36 +22,36 @@ PowerShell-Skript, welches FSLogix automatisch auf die neueste Version aktualisi
     * **Nutzen:** Das Skript überprüft, ob die konfigurierten Variablen (z.B. Downloadpfad, Installationszeit) im korrekten Format vorliegen. Der Anwender wird frühzeitig und sehr konkret auf Konfigurationsfehler hingewiesen, was Fehlfunktionen des Skripts verhindert und Klarheit darüber schafft, exakt war geändert werden muss, damit das Skript starten kann.
     * **Beispiel:** Die detaillierte Fehlermeldung bei falschem Zeitformat ("Ungültiges Zeitformat. Verwende HH:mm.") erleichtert die Korrektur der Konfiguration erheblich.
 
-5.1.  **Validierung des Downloadpfads auf gültiges Format:**
+a)  **Validierung des Downloadpfads auf gültiges Format:**
     * **Implementierung:** Das Skript prüft, ob der `$DownloadPath` entweder einem gültigen Laufwerksbuchstaben mit folgendem Doppelpunkt und Backslash (z.B. `C:\`) oder einem UNC-Pfad (beginnend mit `\\`) entspricht. Außerdem wird geprüft, ob ungültige Zeichen für Windows-Pfade (<>:"/\|\?\*) enthalten sind.
     * **Beispielhafte Fehlermeldung:**
         * "`$DownloadPath 'ungültiger_pfad' is not a valid Windows path format (e.g., C:\\ or \\\\server\\share)."`
         * "`$DownloadPath 'C:\Datei>' contains invalid characters for a Windows path (<>:\/|\?\*)."`
     * **Nutzen für den Anwender:** Verhindert, dass das Skript in ungültige oder nicht existierende Pfade herunterlädt oder versucht, dort Dateien zu erstellen. Dies vermeidet Fehler im späteren Verlauf des Skripts (z.B. beim Speichern oder Extrahieren der heruntergeladenen Datei) und spart dem Anwender Zeit bei der Fehlersuche, da das Problem direkt bei der Konfiguration erkannt wird.
 
-5.2.  **Validierung der `$DownloadUrl` auf gültiges URL-Schema:**
+b)  **Validierung der `$DownloadUrl` auf gültiges URL-Schema:**
     * **Implementierung:** Das Skript überprüft, ob die `$DownloadUrl` mit einem der erwarteten Protokolle (`http`, `https`, `ftp`) beginnt.
     * **Beispielhafte Fehlermeldung:** "`$DownloadUrl is not a valid URL scheme (must be http, https, or ftp)."`
     * **Nutzen für den Anwender:** Stellt sicher, dass das Skript versucht, die Datei von einer gültigen Quelle herunterzuladen. Eine URL mit einem unbekannten oder falschen Schema würde zu einem Downloadfehler führen. Die frühzeitige Validierung hilft, solche Fehler zu vermeiden.
 
-5.3.  **Validierung des `$InstallDay` auf gültige deutsche Wochentage:**
+c)  **Validierung des `$InstallDay` auf gültige deutsche Wochentage:**
     * **Implementierung:** Das Skript prüft, ob der Wert von `$InstallDay` exakt mit einem der sieben deutschen Wochentage ("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag") übereinstimmt (Case-sensitive).
     * **Beispielhafte Fehlermeldung:** "`$InstallDay 'Sonntag!' is not a valid German weekday (Montag, Dienstag, Mittwoch, Donnerstag, Freitag, Samstag, Sonntag)."`
     * **Nutzen für den Anwender:** Verhindert Tippfehler oder die Verwendung englischer Wochentagsnamen, die dazu führen würden, dass die geplante Ausführung nicht wie erwartet stattfindet. Der Anwender kann sich darauf verlassen, dass die Aktualisierung am gewünschten Tag durchgeführt wird.
 
-5.4.  **Validierung der `$InstallTime` auf korrektes 24-Stunden-Format:**
+d)  **Validierung der `$InstallTime` auf korrektes 24-Stunden-Format:**
     * **Implementierung:** Das Skript verwendet ein reguläres Expressions (`-match '^([01]\d|2[0-3]):([0-5]\d)$'`), um sicherzustellen, dass `$InstallTime` dem Format "HH:mm" entspricht, wobei HH zwischen 00 und 23 und mm zwischen 00 und 59 liegen muss.
     * **Beispielhafte Fehlermeldung:** "`$InstallTime '25:00' is not in the valid HH:mm format (00:00 - 23:59)."`
     * **Nutzen für den Anwender:** Stellt sicher, dass die geplante Ausführungszeit im korrekten Format angegeben ist und vom Skript fehlerfrei interpretiert werden kann. Falsche Zeitformate würden die geplante Ausführung unvorhersehbar machen.
 
-5.5.  **Validierung von `$MinutesTolerance` auf gültigen numerischen Bereich:**
+e)  **Validierung von `$MinutesTolerance` auf gültigen numerischen Bereich:**
     * **Implementierung:** Das Skript prüft, ob `$MinutesTolerance` eine gültige ganze Zahl ist und ob dieser Wert innerhalb eines sinnvollen Bereichs liegt (hier 0 bis 720 Minuten, also 12 Stunden).
     * **Beispielhafte Fehlermeldung:**
         * "`$MinutesTolerance 'abc' is not a valid integer."`
         * "`$MinutesTolerance '-5' is not within the valid range (0-720)."`
     * **Nutzen für den Anwender:** Verhindert die Verwendung ungültiger oder unsinniger Toleranzwerte, die zu unerwartetem Verhalten des Skripts bei der Überprüfung der Ausführungszeit führen könnten. Ein negativer Wert oder ein extrem hoher Wert wäre nicht sinnvoll.
 
-5.6.  **Validierung von `$Restart` auf gültige numerische Werte:**
+f)  **Validierung von `$Restart` auf gültige numerische Werte:**
     * **Implementierung:** Das Skript prüft, ob `$Restart` eine gültige ganze Zahl ist und ob dieser Wert entweder 0 oder 1 ist (die erwarteten Steuerungsoptionen).
     * **Beispielhafte Fehlermeldung:**
         * "`$Restart 'ja' is not a valid integer."`
