@@ -8,11 +8,11 @@
 .INPUTS
     Example for variables you have to set through your RMM tool:
 
-    $DownloadPath = "C:\TSD.CenterVision\Software\FSLogix"
-    $InstallDay         = "Samstag"     # Day of the week in German
-    $InstallTime        = "04:00"       # Time in 24h format
-    $MinutesTolerance   = 30            # Tolerance in minutes for the scheduled time check
-    $Restart            = 0             # 0 = do a restart, 1 = don't do a restart
+    $DownloadPath = "C:\TSD.CenterVision\Software\FSLogix"  # Path where the FSLogix zip file will be downloaded to
+    $InstallDay         = "Samstag"                         # Day of the week in German
+    $InstallTime        = "04:00"                           # Time in 24h format
+    $MinutesTolerance   = 30                                # Tolerance in minutes for the scheduled time check
+    $Restart            = 0                                 # 0 = do a restart, 1 = don't do a restart
 
 .OUTPUTS
     Exit Code 0 = Success
