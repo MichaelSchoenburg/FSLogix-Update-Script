@@ -301,7 +301,7 @@ function Get-FSLogix-Version {
     $Version = $null
 
     try {
-        $Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Apps" -Name "InstallVersion" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Version
+        $Version = Get-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Apps" -Name "InstallVersion" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty InstallVersion
     } catch {
         throw "Fehler beim Abrufen der FSLogix-Version aus der Registrierung: $($_.Exception.Message)"
     }
